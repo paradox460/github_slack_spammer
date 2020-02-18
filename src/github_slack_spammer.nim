@@ -4,7 +4,7 @@ import github_slack_spammer/slack_sender, github_slack_spammer/github_grabber
 const NimblePkgVersion* {.strdefine.} = ""
 
 proc github_slack_spammer(owner: string, repo: string, labels: seq[string] = @[],
-    projects: seq[int] = @[], threshold: int = 2, channel: string,
+    projects: seq[int] = @[], threshold: int = 2, channel: string = "",
     github_token: string, slack_token: string = "", quiet: bool = false) =
 
   var pullRequests = getPullRequests(owner = owner, repo = repo,
@@ -15,7 +15,7 @@ proc github_slack_spammer(owner: string, repo: string, labels: seq[string] = @[]
 
   var outputMsg = pullRequests.filterApproved(threshold).outputMessage()
 
-  if slack_token == "" or quiet:
+  if channel == "" or slack_token == "" or quiet:
     echo outputMsg
   else:
     outputMsg.sendMessage(channel = channel, token = slack_token)

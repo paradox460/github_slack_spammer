@@ -3,14 +3,19 @@ import github_slack_spammer/slack_sender, github_slack_spammer/github_grabber
 
 const NimblePkgVersion* {.strdefine.} = ""
 
-proc github_slack_spammer(owner: string, repo: string, labels: seq[string] = @[], projects: seq[int] = @[], threshold: int = 2, channel: string, github_token: string, slack_token: string) =
+proc github_slack_spammer(owner: string, repo: string, labels: seq[string] = @[], projects: seq[int] = @[], threshold: int = 2, channel: string, github_token: string, slack_token: string = "", quiet: bool = false) =
 
   var pullRequests = getPullRequests(owner = owner, repo = repo, labels = labels, token = github_token)
 
   if projects.len != 0:
     pullRequests = pullRequests.filterByProject(projectIds = projects)
 
-  pullRequests.filterApproved(threshold).outputMessage().sendMessage(channel = channel, token = slack_token)
+  var outputMsg = pullRequests.filterApproved(threshold).outputMessage()
+
+  if slack_token == "" or quiet:
+    echo outputMsg
+  else:
+    outputMsg.sendMessage(channel = channel, token = slack_token)
 
 
 when isMainModule:
@@ -34,5 +39,6 @@ $options
     "threshold": "Upper threshold to filter. Any PRs with more approvals than this are omitted.",
     "channel": "Slack channel to send messages to. Either a unique name or a id.",
     "github_token": "Github Personal Access token. Needs the `repo` scope.",
-    "slack_token": "Slack App token. Needs to have the `chat:write:user` permission."
+    "slack_token": "Slack App token. Needs to have the `chat:write:user` permission.",
+    "quiet": "Output locally instead of to a slack channel. Implied if slack_token is empty"
   })

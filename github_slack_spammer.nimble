@@ -1,6 +1,6 @@
 # Package
 
-version       = "0.1.0"
+version       = "0.1.1"
 author        = "Jeff Sandberg"
 description   = "A tool for spamming open PRs into slack"
 license       = "MIT"

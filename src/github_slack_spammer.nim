@@ -3,9 +3,12 @@ import github_slack_spammer/slack_sender, github_slack_spammer/github_grabber
 
 const NimblePkgVersion* {.strdefine.} = ""
 
-proc github_slack_spammer(owner: string, repo: string, labels: seq[string] = @[], projects: seq[int] = @[], threshold: int = 2, channel: string, github_token: string, slack_token: string = "", quiet: bool = false) =
+proc github_slack_spammer(owner: string, repo: string, labels: seq[string] = @[],
+    projects: seq[int] = @[], threshold: int = 2, channel: string,
+    github_token: string, slack_token: string = "", quiet: bool = false) =
 
-  var pullRequests = getPullRequests(owner = owner, repo = repo, labels = labels, token = github_token)
+  var pullRequests = getPullRequests(owner = owner, repo = repo,
+      labels = labels, token = github_token)
 
   if projects.len != 0:
     pullRequests = pullRequests.filterByProject(projectIds = projects)
@@ -21,7 +24,9 @@ proc github_slack_spammer(owner: string, repo: string, labels: seq[string] = @[]
 when isMainModule:
   include cligen/mergeCfgEnv
   clCfg.version = NimblePkgVersion
-  dispatch(github_slack_spammer, cmdname = "github_slack_spammer", positional = "", usage = """
+  dispatch(github_slack_spammer, cmdname = "github_slack_spammer",
+    positional = "",
+    usage = """
 NAME
   github_slack_spammer - Utility for taking PRs that are open and need review and spamming them into a slack channel.
 
@@ -31,7 +36,7 @@ USAGE
 ${doc}Options(opt-arg sep :|=|spc):
 
 $options
-""",help = {
+""", help = {
     "owner": "The owner of the github project. Either a username or an org name.",
     "repo": "The repo name.",
     "labels": "Labels to filter Pull Requests by.",

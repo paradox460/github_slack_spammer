@@ -9,9 +9,10 @@ proc sendMessage*(text: string, channel: string, token: string): void =
     "as_user": true
   }
 
-  let bearer:string = fmt"Bearer {token}"
+  let bearer: string = fmt"Bearer {token}"
   let client = newHttpClient()
-  client.headers = newHttpHeaders({ "Authorization": bearer, "Content-type": "application/json" })
+  client.headers = newHttpHeaders({"Authorization": bearer,
+      "Content-type": "application/json"})
 
   discard client.post(url = "https://slack.com/api/chat.postMessage", body = $j)
 

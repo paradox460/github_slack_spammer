@@ -22,7 +22,7 @@ query($owner: String!, $repo: String!, $labels: [String!]) {
               }
             }
           }
-          reviews(first: 5, states: APPROVED) {
+          reviews(first: 5, states: [APPROVED, CHANGES_REQUESTED]) {
             edges {
               node {
                 author {

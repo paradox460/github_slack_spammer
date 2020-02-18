@@ -10,7 +10,11 @@ If you have nim installed, you can do this via nimble
 nimble install https://github.com/paradox460/github_slack_spammer
 ```
 
-If you don't have nim installed,
+If you don't have nim installed, you can use homebrew.
+
+```sh
+brew install paradox460/formulae/github_slack_spammer
+```
 
 # Usage
 You can run `--help` at any time for the most up-to-date version

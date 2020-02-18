@@ -13,7 +13,14 @@ proc github_slack_spammer(owner: string, repo: string, labels: seq[string] = @[]
   if projects.len != 0:
     pullRequests = pullRequests.filterByProject(projectIds = projects)
 
-  var outputMsg = pullRequests.filterApproved(threshold).outputMessage()
+  pullRequests = pullRequests.filterApproved(threshold)
+
+  var outputMsg: string
+  if pullRequests.len > 0:
+    outputMsg = pullRequests.outputMessage()
+  else:
+    echo "No PRs matching criteria! Exiting 👋"
+    quit(0)
 
   if channel == "" or slack_token == "" or quiet:
     echo outputMsg

@@ -1,4 +1,4 @@
-import httpclient, json, sequtils, strformat, times
+import httpclient, json, sequtils, strformat, strutils, tables, times
 
 let graphQLRequest = """
 query($owner: String!, $repo: String!, $labels: [String!]) {
@@ -22,13 +22,14 @@ query($owner: String!, $repo: String!, $labels: [String!]) {
               }
             }
           }
-          reviews(first: 5, states: [APPROVED, CHANGES_REQUESTED]) {
+          reviews(last: 5, states: [APPROVED, CHANGES_REQUESTED]) {
             edges {
               node {
                 author {
                   login
                 }
                 state
+                updatedAt
               }
             }
           }
@@ -39,8 +40,8 @@ query($owner: String!, $repo: String!, $labels: [String!]) {
 }
 """
 
-type PullRequest* =
-  tuple[
+type
+  PullRequest* = tuple[
     author: string,
     number: int,
     title: string,
@@ -49,6 +50,12 @@ type PullRequest* =
     projects: seq[int],
     approvalCount: int,
     rejectedCount: int
+  ]
+  ReviewState = enum
+    APPROVED, CHANGES_REQUESTED
+  Review = tuple[
+    updatedAt: DateTime,
+    state: ReviewState
   ]
 
 proc parsePullRequest(rawPullRequest: JsonNode): PullRequest =
@@ -59,11 +66,24 @@ proc parsePullRequest(rawPullRequest: JsonNode): PullRequest =
 
   var approvalCount, rejectedCount: int = 0
 
+  var authorReviews: Table[string, Review]
+
   for node in rawPullRequest{"reviews", "edges"}.items:
-    let state = node{"node", "state"}.getStr
-    if state == "APPROVED":
+    let review: Review = (
+      updatedAt: times.parse(node{"node", "updatedAt"}.getStr,
+          "yyyy-MM-dd'T'hh:mm:ss'Z'", utc()),
+      state: parseEnum[ReviewState](node{"node", "state"}.getStr)
+    )
+    let author = node{"node", "author", "login"}.getStr
+
+    if not (authorReviews.hasKey(author) and authorReviews[author].updatedAt >
+        review.updatedAt):
+      authorReviews[author] = review
+
+  for review in authorReviews.values:
+    if review.state == APPROVED:
       approvalCount += 1
-    elif state == "CHANGES_REQUESTED":
+    else:
       rejectedCount += 1
 
   result = (

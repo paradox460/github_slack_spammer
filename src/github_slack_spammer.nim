@@ -52,5 +52,5 @@ $options
     "channel": "Slack channel to send messages to. Either a unique name or a id.",
     "github_token": "Github Personal Access token. Needs the `repo` scope.",
     "slack_token": "Slack App token. Needs to have the `chat:write:user` permission.",
-    "quiet": "Output locally instead of to a slack channel. Implied if slack_token is empty"
+    "quiet": "Output locally instead of to a slack channel. Implied if `slack_token` or `channel` are empty"
   })

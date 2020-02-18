@@ -24,19 +24,19 @@ github_slack_spammer [options]
 ```
 
 ## Options
-| Short | Long         | Type     | Default  | Description                                                                             |
-| ----- | ------------ | -------- | -------- | --------------------------------------------------------------------------------------- |
-| h     | help         |          |          | Shows online help                                                                       |
-|       | help-syntax  |          |          | Shows advanced command line syntax help                                                 |
-| o     | owner        | string   | REQUIRED | GitHub project owner                                                                    |
-| r     | repo         | string   | REQUIRED | GitHub repository                                                                       |
-| l     | labels       | [string] |          | Labels to filter pull requests by                                                       |
-| p     | projects     | [int]    |          | Github project board IDs to filter PRs by                                               |
-| t     | threshold    | int      | 2        | Upper threshold of approvals to filter out.                                             |
-| c     | channel      | string   | REQUIRED | Slack channel to spam into. Can be a channel name or ID                                 |
-| g     | github_token | string   | REQUIRED | Github Personal Access Token. Needs the `repo` scope                                    |
-| s     | slack_token  | string   |          | Slack app token. Needs the `chat:write:user` permission, and to be authed to your user. |
-| q     | quiet        |          |          | Outputs locally instead of to a slack channel. Implied if `slack_token` is absent       |
+| Short | Long         | Type     | Default  | Description                                                                                     |
+| ----- | ------------ | -------- | -------- | ----------------------------------------------------------------------------------------------- |
+| h     | help         |          |          | Shows online help                                                                               |
+|       | help-syntax  |          |          | Shows advanced command line syntax help                                                         |
+| o     | owner        | string   | REQUIRED | GitHub project owner                                                                            |
+| r     | repo         | string   | REQUIRED | GitHub repository                                                                               |
+| l     | labels       | [string] |          | Labels to filter pull requests by                                                               |
+| p     | projects     | [int]    |          | Github project board IDs to filter PRs by                                                       |
+| t     | threshold    | int      | 2        | Upper threshold of approvals to filter out.                                                     |
+| c     | channel      | string   | REQUIRED | Slack channel to spam into. Can be a channel name or ID                                         |
+| g     | github_token | string   | REQUIRED | Github Personal Access Token. Needs the `repo` scope                                            |
+| s     | slack_token  | string   |          | Slack app token. Needs the `chat:write:user` permission, and to be authed to your user.         |
+| q     | quiet        |          |          | Outputs locally instead of to a slack channel. Implied if `slack_token` or `channel` are absent |
 
 # Config
 You can set command defaults in two ways, so you don't have to set them every time.

@@ -1,6 +1,6 @@
 # Package
 
-version       = "0.1.2"
+version       = "0.1.3"
 author        = "Jeff Sandberg"
 description   = "A tool for spamming open PRs into slack"
 license       = "MIT"
@@ -20,3 +20,7 @@ task upx, "Build minified binary":
   if findExe("upx") != "":
     echo "Running `upx --best`"
     exec "upx --best bin/github_slack_spammer"
+
+  if findExe("sha256sum") != "":
+    echo "Running `sha256sum`"
+    exec "sha256sum bin/github_slack_spammer"

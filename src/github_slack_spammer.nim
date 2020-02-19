@@ -3,9 +3,10 @@ import github_slack_spammer/slack_sender, github_slack_spammer/github_grabber
 
 const NimblePkgVersion* {.strdefine.} = ""
 
-proc github_slack_spammer(owner: string, repo: string, labels: seq[string] = @[],
-    projects: seq[int] = @[], threshold: int = 2, channel: string = "",
-    github_token: string, slack_token: string = "", quiet: bool = false) =
+proc github_slack_spammer(owner: string, repo: string, labels: seq[string] = @[
+    ], projects: seq[int] = @[], threshold: int = 2, channel: string = "",
+    github_token: string, slack_token: string = "", quiet: bool = false,
+        heading: string = "Hey guys, these PRs need reviews:") =
 
   var pullRequests = getPullRequests(owner = owner, repo = repo,
       labels = labels, token = github_token)
@@ -17,7 +18,7 @@ proc github_slack_spammer(owner: string, repo: string, labels: seq[string] = @[]
 
   var outputMsg: string
   if pullRequests.len > 0:
-    outputMsg = pullRequests.outputMessage()
+    outputMsg = pullRequests.outputMessage(heading)
   else:
     echo "No PRs matching criteria! Exiting 👋"
     quit(0)
@@ -52,5 +53,6 @@ $options
     "channel": "Slack channel to send messages to. Either a unique name or a id.",
     "github_token": "Github Personal Access token. Needs the `repo` scope.",
     "slack_token": "Slack App token. Needs to have the `chat:write:user` permission.",
-    "quiet": "Output locally instead of to a slack channel. Implied if `slack_token` or `channel` are empty"
+    "quiet": "Output locally instead of to a slack channel. Implied if `slack_token` or `channel` are empty",
+    "heading": "Line to output at the top of the message in slack."
   })

@@ -25,8 +25,10 @@ proc formatPullRequests(pullRequests: seq[PullRequest]): seq[string] =
     &"● <{pr.url}|(#{pr.number}) *{pr.title}*> ({pr.approvalCount} :thumbsup:)"
   )
 
-proc outputMessage*(pullRequests: seq[PullRequest]): string =
-  let formattedPullRequests = formatPullRequests(pullRequests).join("\n")
-  &"""Hey guys, these PRs need reviews:
-{formattedPullRequests}
-  """
+proc outputMessage*(pullRequests: seq[PullRequest],
+    header: string = ""): string =
+  var message = formatPullRequests(pullRequests)
+  if header != "":
+    message.insert(header)
+
+  return message.join("\n")

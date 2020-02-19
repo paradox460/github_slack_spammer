@@ -129,6 +129,8 @@ proc getPullRequests*(owner: string, repo: string, labels: seq[string],
 
 proc filterByProject*(pullRequests: seq[PullRequest], projectIds: seq[
     int]): seq[PullRequest] =
+  if projectIds.len == 0:
+    return pullRequests
   filter(pullRequests, proc (pr: PullRequest): bool =
     projectIds.any(proc (projectId: int): bool = projectId in pr.projects)
   )

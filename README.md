@@ -29,7 +29,7 @@ github_slack_spammer [options]
 | h     | help         |          |                                     | Shows online help                                                                               |
 |       | help-syntax  |          |                                     | Shows advanced command line syntax help                                                         |
 | o     | owner        | string   | REQUIRED                            | GitHub project owner                                                                            |
-| r     | repo         | string   | REQUIRED                            | GitHub repository                                                                               |
+| r     | repos        | [string] | REQUIRED                            | GitHub repositories                                                                             |
 | l     | labels       | [string] |                                     | Labels to filter pull requests by                                                               |
 | p     | projects     | [int]    |                                     | Github project board IDs to filter PRs by                                                       |
 | t     | threshold    | int      | 2                                   | Upper threshold of approvals to filter out.                                                     |
@@ -39,6 +39,7 @@ github_slack_spammer [options]
 | q     | quiet        |          |                                     | Outputs locally instead of to a slack channel. Implied if `slack_token` or `channel` are absent |
 |       | heading      | string   | "Hey guys, these PRs need reviews:" | The heading to insert at the top of the spammed message. Omitting will omit any header.         |
 
+For array types, you can repeat the flag, or view `--help-syntax` for details on how arrays work
 
 # Config
 You can set command defaults in two ways, so you don't have to set them every time.
@@ -57,7 +58,7 @@ You can also set a global config file at `~/.config/github_slack_spammer` Put, o
 
 ```ini
 --owner = "paradox460"
---repo = "github_slack_spammer"
+--repos = "github_slack_spammer"
 --channel = "#ghss"
 --github_token = "token"
 --slack_token = "token"

@@ -1,15 +1,16 @@
-import cligen, os, strutils
+import cligen, os, strutils, zero_functional
 import github_slack_spammer/slack_sender, github_slack_spammer/github_grabber
 
 const NimblePkgVersion* {.strdefine.} = ""
 
-proc github_slack_spammer(owner: string, repo: string, labels: seq[string] = @[
-    ], projects: seq[int] = @[], threshold: int = 2, channel: string = "",
+proc github_slack_spammer(owner: string, repos: seq[string], labels: seq[
+    string] = @[], projects: seq[int] = @[], threshold: int = 2,
+        channel: string = "",
     github_token: string, slack_token: string = "", quiet: bool = false,
         heading: string = "Hey guys, these PRs need reviews:") =
 
-  var pullRequests = getPullRequests(owner = owner, repo = repo,
-      labels = labels, token = github_token)
+  var pullRequests = repos --> map(getPullRequests(owner = owner, repo = it,
+      labels = labels, token = github_token)) --> flatten()
 
   if projects.len != 0:
     pullRequests = pullRequests.filterByProject(projectIds = projects)
@@ -46,7 +47,7 @@ ${doc}Options(opt-arg sep :|=|spc):
 $options
 """, help = {
     "owner": "The owner of the github project. Either a username or an org name.",
-    "repo": "The repo name.",
+    "repos": "The repos to search.",
     "labels": "Labels to filter Pull Requests by.",
     "projects": "Github project IDs to filter by. Project ID can be found in project board URL.",
     "threshold": "Upper threshold to filter. Any PRs with more approvals than this are omitted.",

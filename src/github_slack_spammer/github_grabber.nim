@@ -1,6 +1,6 @@
 import httpclient, json, sequtils, strformat, strutils, tables, times
 
-let graphQLRequest = """
+const graphQLRequest = """
 query($owner: String!, $repo: String!, $labels: [String!]) {
   repository(owner: $owner, name: $repo) {
     pullRequests(states: OPEN, labels: $labels, orderBy: {field: CREATED_AT, direction: DESC}, first: 50 ) {

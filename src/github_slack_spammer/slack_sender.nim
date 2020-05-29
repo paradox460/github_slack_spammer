@@ -1,11 +1,24 @@
-import algorithm, httpclient, json, sequtils, strformat, strutils
-import ./github_grabber
+import httpclient, json, sequtils, strformat, strutils
+from ./github_grabber import PullRequest
 
+proc formatPullRequests(pullRequests: seq[PullRequest]): seq[string] =
+  pullRequests.map(proc (pr: PullRequest): string =
+    &"● <{pr.url}|(#{pr.number}) *{pr.title}*> ({pr.approvalCount} :thumbsup:)"
+  )
 
-proc sendMessage*(text: string, channel: string, token: string): void =
+proc outputMessage(pullRequests: seq[PullRequest],
+    heading: string = ""): string =
+  var message = formatPullRequests(pullRequests)
+  if heading != "":
+    message.insert(heading)
+
+  return message.join("\n")
+
+proc sendMessage*(pullRequests: seq[PullRequest], heading: string = "", channel: string, token: string): void =
+
   var j = %*{
     "channel": channel,
-    "text": text,
+    "text": outputMessage(pullRequests, heading),
     "as_user": true
   }
 
@@ -15,20 +28,3 @@ proc sendMessage*(text: string, channel: string, token: string): void =
       "Content-type": "application/json"})
 
   discard client.post(url = "https://slack.com/api/chat.postMessage", body = $j)
-
-proc formatPullRequests(pullRequests: seq[PullRequest]): seq[string] =
-  pullRequests.sorted(cmp = proc (pr_a, pr_b: PullRequest): int =
-    result = cmp(pr_a.approvalCount, pr_b.approvalCount)
-    if result == 0:
-      result = cmp(pr_a.number, pr_b.number)
-  ).map(proc (pr: PullRequest): string =
-    &"● <{pr.url}|(#{pr.number}) *{pr.title}*> ({pr.approvalCount} :thumbsup:)"
-  )
-
-proc outputMessage*(pullRequests: seq[PullRequest],
-    header: string = ""): string =
-  var message = formatPullRequests(pullRequests)
-  if header != "":
-    message.insert(header)
-
-  return message.join("\n")

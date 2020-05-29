@@ -1,13 +1,21 @@
 import cligen, os, strutils, zero_functional
-import github_slack_spammer/slack_sender, github_slack_spammer/github_grabber
+import github_slack_spammer/slack_sender, github_slack_spammer/github_grabber, github_slack_spammer/terminal_sender
 
 const NimblePkgVersion* {.strdefine.} = ""
 
-proc github_slack_spammer(owner: string, repos: seq[string], labels: seq[
-    string] = @[], projects: seq[int] = @[], threshold: int = 2,
-        channel: string = "",
-    github_token: string, slack_token: string = "", quiet: bool = false,
-        heading: string = "Hey guys, these PRs need reviews:") =
+proc github_slack_spammer(
+  owner: string,
+  repos: seq[string],
+  labels: seq[string] = @[],
+  projects: seq[int] = @[],
+  threshold: int = 2,
+  channel: string = "",
+  github_token: string,
+  slack_token: string = "",
+  quiet: bool = false,
+  heading: string = "Hey guys, these PRs need reviews:") =
+
+  echo "Fetching pull requests..."
 
   var pullRequests = repos --> map(getPullRequests(owner = owner, repo = it,
       labels = labels, token = github_token)) --> flatten()
@@ -15,19 +23,16 @@ proc github_slack_spammer(owner: string, repos: seq[string], labels: seq[
   if projects.len != 0:
     pullRequests = pullRequests.filterByProject(projectIds = projects)
 
-  pullRequests = pullRequests.filterApproved(threshold)
+  pullRequests = pullRequests.filterDrafts().filterApproved(threshold).sortPullRequests()
 
-  var outputMsg: string
-  if pullRequests.len > 0:
-    outputMsg = pullRequests.outputMessage(heading)
-  else:
+  if pullRequests.len == 0:
     echo "No PRs matching criteria! Exiting 👋"
     quit(0)
 
-  if channel == "" or slack_token == "" or quiet:
-    echo outputMsg
+  if quiet or channel == "" or slack_token == "":
+    terminal_sender.sendMessage(pullRequests)
   else:
-    outputMsg.sendMessage(channel = channel, token = slack_token)
+    slack_sender.sendMessage(pullRequests = pullRequests, heading = heading, channel = channel, token = slack_token)
 
 
 when isMainModule:

@@ -11,7 +11,7 @@ bin           = @["github_slack_spammer"]
 
 # Dependencies
 
-requires "nim >= 0.20.2", "cligen >= 0.9.42 & < 10, zero_functional >= 1.1.0 & < 2"
+requires "nim >= 0.20.2", "cligen >= 0.9.42 & < 10, zero_functional >= 1.1.0 & < 2, terminaltables >= 0.1.1 & < 2"
 
 task upx, "Build minified binary":
   let args = "nimble build -d:release"

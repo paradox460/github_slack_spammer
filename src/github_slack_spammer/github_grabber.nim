@@ -1,4 +1,4 @@
-import httpclient, json, sequtils, strformat, strutils, tables, times
+import algorithm, httpclient, json, sequtils, strformat, strutils, tables, times
 
 const graphQLRequest = """
 query($owner: String!, $repo: String!, $labels: [String!]) {
@@ -146,3 +146,10 @@ proc filterApproved*(pullRequests: seq[PullRequest],
 
 proc filterDrafts*(pullRequests: seq[PullRequest]): seq[PullRequest] =
   filter(pullRequests, proc (pr: PullRequest): bool = not pr.isDraft)
+
+proc sortPullRequests*(pullRequests: seq[PullRequest]): seq[PullRequest] =
+  pullRequests.sorted(cmp = proc (pr_a, pr_b: PullRequest): int =
+    result = cmp(pr_a.approvalCount, pr_b.approvalCount)
+    if result == 0:
+      result = cmp(pr_a.number, pr_b.number)
+  )

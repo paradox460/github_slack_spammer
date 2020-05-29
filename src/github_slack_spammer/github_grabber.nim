@@ -13,6 +13,7 @@ query($owner: String!, $repo: String!, $labels: [String!]) {
           number
           url
           createdAt
+          isDraft
           projectCards(first: 5) {
             edges {
               node {
@@ -49,7 +50,8 @@ type
     createdAt: DateTime,
     projects: seq[int],
     approvalCount: int,
-    rejectedCount: int
+    rejectedCount: int,
+    isDraft: bool
   ]
   ReviewState = enum
     APPROVED, CHANGES_REQUESTED
@@ -95,7 +97,8 @@ proc parsePullRequest(rawPullRequest: JsonNode): PullRequest =
         "yyyy-MM-dd'T'hh:mm:ss'Z'", utc()),
     projects: parsedProjects,
     approvalCount: approvalCount,
-    rejectedCount: rejectedCount
+    rejectedCount: rejectedCount,
+    isDraft: rawPullRequest{"isDraft"}.getBool
   )
 
 proc getPullRequests*(owner: string, repo: string, labels: seq[string],
@@ -140,3 +143,6 @@ proc filterApproved*(pullRequests: seq[PullRequest],
   filter(pullRequests, proc (pr: PullRequest): bool =
     pr.rejectedCount == 0 and pr.approvalCount < approvalThreshold
   )
+
+proc filterDrafts*(pullRequests: seq[PullRequest]): seq[PullRequest] =
+  filter(pullRequests, proc (pr: PullRequest): bool = not pr.isDraft)
